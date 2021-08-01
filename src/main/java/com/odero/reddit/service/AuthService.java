@@ -1,6 +1,7 @@
 package com.odero.reddit.service;
 
 import com.odero.reddit.dto.RegisterRequest;
+import com.odero.reddit.model.NotificationEmail;
 import com.odero.reddit.model.User;
 import com.odero.reddit.model.VerificationToken;
 import com.odero.reddit.repository.UserRepository;
@@ -20,6 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final MailService mailService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -33,6 +35,11 @@ public class AuthService {
         userRepository.save(user);
 
         String token = generateVerificationToken(user);
+        mailService.sendMail(new NotificationEmail("Reddit clone email Verification", user.getEmail(),
+                "Oh, you are here." +
+                        "Click on this link to activate your account" +
+                        "http://localhost:8080/api/auth/accountVerification/" +token
+                ));
     }
 
     private String generateVerificationToken(User user) {
