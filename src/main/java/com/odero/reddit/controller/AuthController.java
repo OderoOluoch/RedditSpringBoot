@@ -1,5 +1,6 @@
 package com.odero.reddit.controller;
 
+import com.odero.reddit.dto.LoginRequest;
 import com.odero.reddit.dto.RegisterRequest;
 import com.odero.reddit.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -25,5 +26,10 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token){
         authService.veriftyAccount(token);
         return new ResponseEntity<>("User Activation went well", HttpStatus.OK);
+    }
+
+    @PostMapping("login")
+    public void login(@RequestBody LoginRequest loginRequest){
+        authService.login(loginRequest);
     }
 }

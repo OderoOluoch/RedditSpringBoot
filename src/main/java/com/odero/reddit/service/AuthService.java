@@ -1,5 +1,6 @@
 package com.odero.reddit.service;
 
+import com.odero.reddit.dto.LoginRequest;
 import com.odero.reddit.dto.RegisterRequest;
 import com.odero.reddit.exception.SpringRedditException;
 import com.odero.reddit.model.NotificationEmail;
@@ -8,6 +9,8 @@ import com.odero.reddit.model.VerificationToken;
 import com.odero.reddit.repository.UserRepository;
 import com.odero.reddit.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -65,5 +69,9 @@ public class AuthService {
        User user = userRepository.findByUsername(username).orElseThrow(()-> new SpringRedditException("No user found with the name " +username));
        user.setEnabled(true);
        userRepository.save(user);
+    }
+
+    public void login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
     }
 }
