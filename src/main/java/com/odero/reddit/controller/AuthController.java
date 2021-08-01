@@ -5,10 +5,7 @@ import com.odero.reddit.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,5 +19,11 @@ public class AuthController {
         authService.signup(registerRequest);
         return new ResponseEntity<>("User registration went well", HttpStatus.OK);
 
+    }
+
+    @GetMapping("accountVerification/{token}")
+    public ResponseEntity<String> verifyAccount(@PathVariable String token){
+        authService.veriftyAccount(token);
+        return new ResponseEntity<>("User Activation went well", HttpStatus.OK);
     }
 }
