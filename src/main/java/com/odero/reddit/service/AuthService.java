@@ -1,5 +1,6 @@
 package com.odero.reddit.service;
 
+import com.odero.reddit.dto.AuthenticationResponse;
 import com.odero.reddit.dto.LoginRequest;
 import com.odero.reddit.dto.RegisterRequest;
 import com.odero.reddit.exception.SpringRedditException;
@@ -8,9 +9,12 @@ import com.odero.reddit.model.User;
 import com.odero.reddit.model.VerificationToken;
 import com.odero.reddit.repository.UserRepository;
 import com.odero.reddit.repository.VerificationTokenRepository;
+import com.odero.reddit.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +32,7 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -71,7 +76,10 @@ public class AuthService {
        userRepository.save(user);
     }
 
-    public void login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
+    public AuthenticationResponse login(LoginRequest loginRequest) {
+        Authentication authentication =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtProvider.generateToken(authentication);
+        return new AuthenticationResponse(token,loginRequest.getUsername());
     }
 }
