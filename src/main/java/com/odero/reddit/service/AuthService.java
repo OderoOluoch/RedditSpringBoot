@@ -39,7 +39,7 @@ public class AuthService {
         String token = generateVerificationToken(user);
         mailService.sendMail(new NotificationEmail("Reddit clone email Verification", user.getEmail(),
                 "Oh, you are here." +
-                        "Click on this link to activate your account" +
+                        "Click on this link to activate your account  " +
                         "http://localhost:8080/api/auth/accountVerification/" +token
                 ));
     }
