@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.IIOException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
@@ -16,21 +15,22 @@ import java.security.cert.CertificateException;
 
 @Service
 public class JwtProvider {
+
     private KeyStore keyStore;
 
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
         try{
-            keyStore = KeyStore.getInstance("jks");
+            keyStore = KeyStore.getInstance("JKS");
             InputStream resourceAsStream = getClass().getResourceAsStream("/springblog.jks");
             keyStore.load(resourceAsStream,"secret".toCharArray());
-            } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IIOException e){
+            } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e){
                 throw new SpringRedditException("Exception occurred while loading keyStore || " + e.getMessage());
         }
     }
 
     public String generateToken(Authentication authentication){
-        User principal = (User) authentication.getPrincipal();
+        org.springframework.security.core.userdetails.User principal = (User) authentication.getPrincipal();
 
         return Jwts.builder()
                 .setSubject(principal.getUsername())
